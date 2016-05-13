@@ -96,7 +96,7 @@ fi
 
 echo '
 #################################################################
-#####        UPDATE REPOSITORIES                            #####
+#####               UPDATE REPOSITORIES                     #####
 #################################################################'
 [ "$_DISTRO" == "Ubuntu" ] && apt-get update -y
 
@@ -109,10 +109,10 @@ echo '
 
 echo '
 #################################################################
-#####               INSTALL LAMP PACKAGES                   #####
+#####               INSTALL REQUIRED PACKAGES               #####
 #################################################################'
-[ "$_DISTRO" == "Ubuntu" ] && install_packages "apache2 mysql-server php5 php-pear php5-mysql" #TODO revise if php-pear is needed
-[ "$_DISTRO" == "CentOS" -o "$_DISTRO" == "Red" ] && install_packages "httpd mariadb mariadb-server php php-mysql"
+[ "$_DISTRO" == "Ubuntu" ] && install_packages "mysql-server"
+[ "$_DISTRO" == "CentOS" -o "$_DISTRO" == "Red" ] && install_packages "mariadb mariadb-server"
 
 if [ "$_DISTRO" == "CentOS" -o "$_DISTRO" == "Red" ]
 then
@@ -151,7 +151,7 @@ done
 
 echo '
 #################################################################
-#####        INSTALL PYTHON PACKAGES                        #####
+#####               INSTALL PYTHON PACKAGES                 #####
 #################################################################'
 [ "$_DISTRO" == "Ubuntu" ] && install_packages "python-yaml python-libvirt python-bottle python-mysqldb python-jsonschema python-paramiko python-argcomplete python-requests git screen wget"
 [ "$_DISTRO" == "CentOS" -o "$_DISTRO" == "Red" ] && install_packages "PyYAML libvirt-python MySQL-python python-jsonschema python-paramiko python-argcomplete python-requests git screen wget"
@@ -165,7 +165,7 @@ echo '
 
 echo '
 #################################################################
-#####        DOWNLOAD SOURCE                                #####
+#####                 DOWNLOAD SOURCE                       #####
 #################################################################'
 su $SUDO_USER -c 'git clone https://github.com/nfvlabs/openvim.git openvim'
 #Unncoment to use a concrete branch, if not main branch 
@@ -175,7 +175,7 @@ su $SUDO_USER -c 'git clone https://github.com/nfvlabs/openvim.git openvim'
 
 echo '
 #################################################################
-#####        CREATE DATABASE                                #####
+#####               CREATE DATABASE                         #####
 #################################################################'
 mysqladmin -u$DBUSER $DBPASSWD create vim_db
 
