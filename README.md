@@ -8,7 +8,7 @@ Openvim is a light implementation of an NFV VIM supporting EPA features and cont
 - SR-IOV interfaces
 - Injection of virtual PCI addresses
 
-Openvim interfaces with the compute nodes in the NFV Infrastructure and an Openflow controller in order to provide computing and networking capabilities and to deploy virtual machines. It offers a northbound interface, based on REST ([openvim API](http://github.com/nfvlabs/openmano/raw/master/docs/openvim-api-0.6.pdf "openvim API")), where enhanced cloud services are offered including the creation, deletion and management of images, flavors, instances and networks. 
+Openvim interfaces with the compute nodes in the NFV Infrastructure and an Openflow controller in order to provide computing and networking capabilities and to deploy virtual machines. It offers a northbound interface, based on REST ([openvim API](http://github.com/nfvlabs/openvim/raw/master/docs/openvim-api-0.6.pdf "openvim API")), where enhanced cloud services are offered including the creation, deletion and management of images, flavors, instances and networks. 
 
 #History
 
@@ -33,6 +33,12 @@ The relevant releases/branches in openvim are the following:
         #In case the image does not have a mysql/mariadb it will be installed
 
 Manual installation can be done following these [instructions](https://github.com/nfvlabs/openvim/wiki/Getting-started#manual-installation). 
+
+#Full documentation
+- [Getting started](https://github.com/nfvlabs/openvim/wiki/Getting-started "getting started")
+- [Compute node configuration](https://github.com/nfvlabs/openvim/wiki/Compute-node-configuration "compute node configuration")
+- [Openvim usage manual](https://github.com/nfvlabs/openvim/wiki/openvim-usage  "openvim usage manual")
+- [Openvim API](https://github.com/nfvlabs/openvim/raw/master/docs/openvim-api-0.6.pdf "openvim API")
 
 #License
 Check the [License](https://github.com/nfvlabs/openvim/blob/master/LICENSE "license") file.
