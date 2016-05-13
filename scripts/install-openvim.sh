@@ -169,9 +169,9 @@ echo '
 #################################################################'
 su $SUDO_USER -c 'git clone https://github.com/nfvlabs/openvim.git openvim'
 #Unncoment to use a concrete branch, if not main branch 
-#pushd openvim
-#su $SUDO_USER -c 'git checkout v0.4'
-#popd
+pushd openvim
+su $SUDO_USER -c 'git checkout v0.4'
+popd
 
 echo '
 #################################################################
