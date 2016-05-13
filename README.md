@@ -28,11 +28,16 @@ The relevant releases/branches in openvim are the following:
 
         wget https://github.com/nfvlabs/openvim/raw/v0.4/scripts/install-openvim.sh
         chmod +x install-openvim.sh
-        sudo ./install-openvim.sh [<database-root-user> [<database-password>]]
-        #NOTE: you can provide optionally the root user and password of the database.
-        #In case the image does not have a mysql/mariadb it will be installed
+        sudo ./install-openvim.sh [<database-root-user> [<database-root-password>]]
+        #NOTE: you can provide optionally the DB root user and password.
 
 Manual installation can be done following these [instructions](https://github.com/nfvlabs/openvim/wiki/Getting-started#manual-installation). 
+
+#Full documentation
+- [Getting started](https://github.com/nfvlabs/openvim/wiki/Getting-started "getting started")
+- [Compute node configuration](https://github.com/nfvlabs/openvim/wiki/Compute-node-configuration "compute node configuration")
+- [Openvim usage manual](https://github.com/nfvlabs/openvim/wiki/openvim-usage  "openvim usage manual")
+- [Openvim API](https://github.com/nfvlabs/openmano/raw/master/docs/openvim-api-0.6.pdf "openvim API")
 
 #License
 Check the [License](https://github.com/nfvlabs/openvim/blob/master/LICENSE "license") file.
