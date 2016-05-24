@@ -21,21 +21,18 @@
 # contact with: nfvlabs@tid.es
 ##
 
-#launch openvim (andr floodlight) inside a screen. 
-#It assumes a relative path '..' for openvim 
-#for floodlight, the variable FLOODLIGHT_PATH indicates the installation path
+#launch floodlight inside a screen. It assumes shell variable $FLOODLIGHT_PATH
+# contain the installation path
 
 
 DIRNAME=$(readlink -f ${BASH_SOURCE[0]})
 DIRNAME=$(dirname $DIRNAME )
 DIR_OM=$(dirname $DIRNAME )
-#[[ -z $FLOODLIGHT_PATH ]] && FLOODLIGHT_PATH=$(dirname ${DIR_OM})/floodlight-1.1
-#[[ -z $FLOODLIGHT_PATH ]] && FLOODLIGHT_PATH=$(dirname ${DIR_OM})/floodlight-0.90
 
 function usage(){
-    echo -e "Usage: $0 [openvim/vim] [floodlight/flow] start|stop|restart|status"
-    echo -e "  Launch|Removes|Restart|Getstatus openvim (by default) or/and floodlight on a screen"
-    echo -e "  For floodlight variable FLOODLIGHT_PATH must indicate installation path"
+    echo -e "Usage: $0 start|stop|restart|status"
+    echo -e "  Launch|Removes|Restart|Getstatus floodlight on a screen"
+    echo -e "  Shell variable FLOODLIGHT_PATH must indicate floodlight installationpath"
 }
 
 function kill_pid(){
@@ -54,16 +51,12 @@ function kill_pid(){
 }
 
 #obtain parameters
-om_list=""
 #om_action="start"  #uncoment to get a default action
 for param in $*
 do
     [ "$param" == "start" -o "$param" == "stop"  -o "$param" == "restart" -o "$param" == "status" ] && om_action=$param  && continue
-    [ "$param" == "openvim" -o "$param" == "vim"  ]    && om_list="$om_list vim"              && continue
-    [ "$param" == "openmano" -o "$param" == "mano" ]   && continue #allow and ingore for backwards compatibility
-    [ "$param" == "openflow" -o "$param" == "flow" -o "$param" == "floodlight" ] && om_list="flow $om_list" && continue
+    [ "$param" == "openflow" -o "$param" == "flow" -o "$param" == "floodlight" ] && continue
     [ "$param" == "-h" -o "$param" == "--help" ] && usage && exit 0
-    #note flow that it must be the first element, because openvim relay on this
     
     #if none of above, reach this line because a param is incorrect
     echo "Unknown param '$param' type $0 --help" >&2
@@ -73,13 +66,9 @@ done
 #check action is provided
 [ -z "$om_action" ] && usage >&2 && exit -1
 
-#if no componenets supplied assume all
-[ -z "$om_list" ] && om_list="vim"
-
-for om_component in $om_list
-do
-    [ "${om_component}" == "flow" ] && om_cmd="floodlight.jar" && om_name="floodlight" && om_dir=$FLOODLIGHT_PATH
-    [ "${om_component}" == "vim" ]  && om_cmd="openvimd.py"    && om_name="openvim   " && om_dir=${DIR_OM}
+    om_cmd="floodlight.jar"
+    om_name="floodlight"
+    
     #obtain PID of program
     component_id=`ps -o pid,cmd -U $USER -u $USER | grep -v grep | grep ${om_cmd} | awk '{print $1}'`
 
@@ -97,9 +86,9 @@ do
         [ -n "$component_id" ] && echo -n "    stopping $om_name ... " && kill_pid $component_id 
         component_id=""
         #terminates screen
-        if screen -wipe | grep -Fq .$om_component
+        if screen -wipe | grep -Fq .flow
         then
-            screen -S $om_component -p 0 -X stuff "exit\n"
+            screen -S flow -p 0 -X stuff "exit\n"
             sleep 1
         fi
     fi
@@ -107,25 +96,24 @@ do
     #start
     if [ "$om_action" == "start" -o "$om_action" == "restart" ]
     then
-        [[ -z $FLOODLIGHT_PATH ]] && [[ $om_component == flow ]] && 
-            echo "FLOODLIGHT_PATH shell variable must indicate floodlight installation path" >&2 && exit -1
+        [[ -z $FLOODLIGHT_PATH ]] && echo "FLOODLIGHT_PATH shell variable must indicate floodlight installation path" >&2 && exit -1
         #calculates log file name
         logfile=""
-        mkdir -p $DIR_OM/logs && logfile=$DIR_OM/logs/open${om_component} || echo "can not create logs directory  $DIR_OM/logs"
+        mkdir -p $DIR_OM/logs && logfile=$DIR_OM/logs/openflow || echo "can not create logs directory  $DIR_OM/logs"
         #check already running
         [ -n "$component_id" ] && echo "    $om_name is already running. Skipping" && continue
         #create screen if not created
         echo -n "    starting $om_name ... "
-        if ! screen -wipe | grep -Fq .${om_component}
+        if ! screen -wipe | grep -Fq .flow
         then
-            pushd ${om_dir} > /dev/null
-            screen -dmS ${om_component}  bash
+            pushd ${FLOODLIGHT_PATH} > /dev/null
+            screen -dmS flow  bash
             sleep 1
             popd > /dev/null
         else
-            echo -n " using existing screen '${om_component}' ... "
-            screen -S ${om_component} -p 0 -X log off
-            screen -S ${om_component} -p 0 -X stuff "cd ${om_dir}\n"
+            echo -n " using existing screen 'flow' ... "
+            screen -S flow -p 0 -X log off
+            screen -S flow -p 0 -X stuff "cd ${FLOODLIGHT_PATH}\n"
             sleep 1
         fi
         #move old log file index one number up and log again in index 0
@@ -136,14 +124,11 @@ do
                 [[ -f ${logfile}.${index} ]] && mv ${logfile}.${index} ${logfile}.$((index+1))
             done
             [[ -f ${logfile}.log ]] && mv ${logfile}.log ${logfile}.0
-            screen -S ${om_component} -p 0 -X logfile ${logfile}.log
-            screen -S ${om_component} -p 0 -X log on
+            screen -S flow -p 0 -X logfile ${logfile}.log
+            screen -S flow -p 0 -X log on
         fi
         #launch command to screen
-        #[ "${om_component}" != "flow" ] && screen -S ${om_component} -p 0 -X stuff "cd ${DIR_OM}/open${om_component}\n" && sleep 1
-        [ "${om_component}" == "flow" ] && screen -S flow -p 0 -X stuff "java  -Dlogback.configurationFile=${DIRNAME}/flow-logback.xml -jar ./target/floodlight.jar -cf ${DIRNAME}/flow.properties_v0.9\n"
-        #[ "${om_component}" == "flow" ] && screen -S flow -p 0 -X stuff "java  -Dlogback.configurationFile=${DIRNAME}/flow-logback.xml -jar ./target/floodlight.jar -cf ${DIRNAME}/flow.properties_v1.1\n" && sleep 5
-        [ "${om_component}" != "flow" ] && screen -S ${om_component} -p 0 -X stuff "./${om_cmd}\n"
+        screen -S flow -p 0 -X stuff "java  -Dlogback.configurationFile=${DIRNAME}/flow-logback.xml -jar ./target/floodlight.jar -cf ${DIRNAME}/flow.properties_v0.9\n"
         #check if is running
         [[ -n $logfile ]] && timeout=120 #2 minute
         [[ -z $logfile ]] && timeout=20
@@ -160,8 +145,7 @@ do
                [[ $log_lines -ge 2 ]] &&  echo -n "ERROR, it has exited." && break
                #started because writted serveral lines at log so report error
            fi
-           [[ -n $logfile ]] && [[ ${om_component} == flow ]] && grep -q "Listening for switch connections" ${logfile}.log && sleep 1 && break
-           [[ -n $logfile ]] && [[ ${om_component} != flow ]] && grep -q "open${om_component}d ready" ${logfile}.log && break
+           [[ -n $logfile ]] && grep -q "Listening for switch connections" ${logfile}.log && sleep 1 && break
            sleep 1
            timeout=$((timeout -1))
         done
@@ -169,11 +153,10 @@ do
         then 
            echo -n "timeout!"
         else
-           echo -n "running on 'screen -x ${om_component}'."
+           echo -n "running on 'screen -x flow'."
         fi
         [[ -n $logfile ]] && echo "  Logging at '${logfile}.log'" || echo
     fi
-done
 
 
 

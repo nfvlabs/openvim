@@ -22,7 +22,7 @@
 ##
 
 #ONLY TESTED for Ubuntu 14.10 14.04, CentOS7 and RHEL7
-#Get needed packages, source code and configure to run openvim and floodlight
+#Get needed packages, source code and configure to run openvim
 #Ask for database user and password if not provided
 #        $1: database user
 #        $2: database password 
@@ -159,10 +159,6 @@ echo '
 #The only way to install python-bottle on Centos7 is with easy_install or pip
 [ "$_DISTRO" == "CentOS" -o "$_DISTRO" == "Red" ] && easy_install -U bottle
 
-#install openstack client needed for using openstack as a VIM
-[ "$_DISTRO" == "Ubuntu" ] && install_packages "python-novaclient python-keystoneclient python-glanceclient python-neutronclient"
-[ "$_DISTRO" == "CentOS" -o "$_DISTRO" == "Red" ] && install_packages "python-devel" && easy_install python-novaclient python-keystoneclient python-glanceclient python-neutronclient #TODO revise if gcc python-pip is needed
-
 echo '
 #################################################################
 #####                 DOWNLOAD SOURCE                       #####
@@ -184,45 +180,6 @@ echo "GRANT ALL PRIVILEGES ON vim_db.* TO 'vim'@'localhost';"   | mysql -u$DBUSE
 
 echo "vim database"
 su $SUDO_USER -c './openvim/database_utils/init_vim_db.sh -u vim -p vimpw'
-
-
-echo '
-#################################################################
-#####        DOWNLOADING AND CONFIGURE FLOODLIGHT           #####
-#################################################################'
-#FLoodLight
-echo "Installing FloodLight requires Java, that takes a while to download"
-read -e -p "Do you agree on download and install FloodLight from http://www.projectfloodlight.org upon the owner license? (y/N)" KK
-if [ "$KK" == "y" -o   "$KK" == "yes" ]
-then
-  #floodlight 0.9
-    echo "downloading v0.90 from the oficial page"
-    su $SUDO_USER -c 'wget https://github.com/floodlight/floodlight/archive/v0.90.tar.gz'
-    su $SUDO_USER -c 'tar xvzf v0.90.tar.gz'
-  #floodlight 1.1
-    #echo "downloading v1.1 from the oficial page"
-    #su $SUDO_USER -c 'wget https://github.com/floodlight/floodlight/archive/v1.1.tar.gz'
-    #su $SUDO_USER -c 'tar xvzf v01.1.tar.gz'
-    
-    #Install Java JDK and Ant packages at the VM 
-    [ "$_DISTRO" == "Ubuntu" ] && install_packages "build-essential default-jdk ant python-dev" #TODO revise if packages are needed apart from ant
-    [ "$_DISTRO" == "CentOS" -o "$_DISTRO" == "Red" ] && install_package "                            ant "
-
-    #Configure Java environment variables. It is seem that is not needed!!!
-    #export JAVA_HOME=/usr/lib/jvm/default-java" >> /home/${SUDO_USER}/.bashr
-    #export PATH=$PATH:$JAVA_HOME
-    #echo "export JAVA_HOME=/usr/lib/jvm/default-java" >> /home/${SUDO_USER}/.bashrc
-    #echo "export PATH=$PATH:$JAVA_HOME" >> /home/${SUDO_USER}/.bashrc
-
-    #Compile floodlight
-    pushd ./floodlight-0.90
-    #pushd ./floodlight-1.1
-    su $SUDO_USER -c 'ant'
-    popd
-    OPENFLOW_INSTALED="FloodLight, "
-else
-    echo "skipping!"
-fi
 
 
 if [ "$_DISTRO" == "CentOS" -o "$_DISTRO" == "Red" ]
@@ -264,9 +221,11 @@ su $SUDO_USER -c 'mkdir -p ~/bin'
 rm -f /home/${SUDO_USER}/bin/openvim
 rm -f /home/${SUDO_USER}/bin/openflow
 rm -f /home/${SUDO_USER}/bin/service-openvim
+rm -f /home/${SUDO_USER}/bin/service-floodlight
 ln -s ${PWD}/openvim/openvim   /home/${SUDO_USER}/bin/openvim
 ln -s ${PWD}/openvim/openflow  /home/${SUDO_USER}/bin/openflow
 ln -s ${PWD}/openvim/scripts/service-openvim.sh  /home/${SUDO_USER}/bin/service-openvim
+ln -s ${PWD}/openvim/scripts/service-floodlight.sh  /home/${SUDO_USER}/bin/service-floodlight
 
 #insert /home/<user>/bin in the PATH
 #skiped because normally this is done authomatically when ~/bin exist
@@ -289,7 +248,7 @@ fi
 
 echo
 echo "Done!  you may need to logout and login again for loading the configuration"
-echo " Run './openvim/scripts/service-openvim.sh start' for starting ${OPENFLOW_INSTALED}openvim in a screen"
+echo " Run './openvim/scripts/service-openvim.sh start' for starting openvim in a screen"
 
 
 
