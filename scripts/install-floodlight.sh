@@ -139,11 +139,8 @@ echo '
 #####        CONFIGURE envioronment                         #####
 #################################################################'
 #insert into .bashrc
-if ! grep -q bash_completion.d/python-argcomplete.sh /home/${SUDO_USER}/.bashrc
-then
     echo "    inserting FLOODLIGHT_PATH at .bashrc"
     su $SUDO_USER -c "echo 'export FLOODLIGHT_PATH=\"${FLOODLIGHT_PATH}\"'  >> ~/.bashrc"
-fi
 
 echo
 echo "Done!  you may need to logout and login again for loading the configuration"
