@@ -222,10 +222,12 @@ rm -f /home/${SUDO_USER}/bin/openvim
 rm -f /home/${SUDO_USER}/bin/openflow
 rm -f /home/${SUDO_USER}/bin/service-openvim
 rm -f /home/${SUDO_USER}/bin/service-floodlight
+rm -f /home/${SUDO_USER}/bin/service-opendaylight
 ln -s ${PWD}/openvim/openvim   /home/${SUDO_USER}/bin/openvim
 ln -s ${PWD}/openvim/openflow  /home/${SUDO_USER}/bin/openflow
 ln -s ${PWD}/openvim/scripts/service-openvim.sh  /home/${SUDO_USER}/bin/service-openvim
 ln -s ${PWD}/openvim/scripts/service-floodlight.sh  /home/${SUDO_USER}/bin/service-floodlight
+ln -s ${PWD}/openvim/scripts/service-opendaylight.sh  /home/${SUDO_USER}/bin/service-opendaylight
 
 #insert /home/<user>/bin in the PATH
 #skiped because normally this is done authomatically when ~/bin exist
