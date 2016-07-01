@@ -29,17 +29,17 @@ change it to:
 # Usage
 
     juju deploy mysql
-    juju deploy openvim-controller
+    juju deploy openvim
     juju deploy openvim-compute
-    juju relate mysql openvim-controller
-    juju relate openvim-compute openvim-controller
+    juju relate mysql openvim
+    juju relate openvim-compute openvim
     
 # Creating and starting a VM
 
-The openvim-controller charm will create a default tenant, image, flavor,
+The openvim charm will create a default tenant, image, flavor,
 and networks, but you'll want to add your own VM when you're ready to deploy.
 This charm generates a basic VM yaml definition for you if you'd like to launch
-one quickly. First, ssh into your openvim-controller box:
+one quickly. First, ssh into your openvim box:
 
     juju ssh openvim-contrller/0 # may not be zero, find instance id with `juju status`.
 
