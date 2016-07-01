@@ -1,0 +1,25 @@
+includes:
+  - 'layer:basic'
+  - 'interface:mysql'
+  - 'interface:openvim-compute'
+  - 'interface:openvim'
+options:
+  basic:
+    packages:
+      - git
+      - screen
+      - wget
+      - mysql-client
+      - python3-git
+      - python-yaml
+      - python-libvirt
+      - python-bottle
+      - python-mysqldb
+      - python-jsonschema
+      - python-paramiko
+      - python-argcomplete
+      - python-requests
+      - python-novaclient
+      - python-keystoneclient
+      - python-glanceclient
+      - python-neutronclient

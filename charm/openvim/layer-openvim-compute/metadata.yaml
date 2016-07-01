@@ -1,0 +1,19 @@
+name: openvim-compute
+summary: Open Virtual Infrastructure Manager
+maintainers:
+  - Rye Terrell <rye.terrell@canonical.com>
+  - George Kraft <george.kraft@canonical.com>
+description: |
+  Installs and configures a compute node for OpenVIM
+tags:
+  - nfv
+  - telco
+  - osm
+series:
+  - xenial
+extra-bindings:
+  public:
+  internal:
+provides:
+  compute:
+    interface: openvim-compute

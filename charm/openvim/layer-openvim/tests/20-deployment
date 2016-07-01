@@ -1,0 +1,47 @@
+#!/usr/bin/python3
+
+import amulet
+import openvim
+
+deployment = None
+
+def deploy_openvim_without_relations():
+    global deployment
+    deployment = amulet.Deployment()
+    deployment.add("mysql", series="trusty")
+    deployment.add("openvim-controller", series="xenial")
+    deployment.add("openvim-compute", charm="local:xenial/openvim-compute", series="xenial")
+    deployment.expose("openvim-controller")
+    deployment.setup(timeout=900)
+    deployment.sentry.wait()
+
+def add_relations():
+    deployment.relate("openvim-controller:db", "mysql:db")
+    deployment.relate("openvim-controller:compute", "openvim-compute:compute")
+
+def get_openvim_connection():
+    address = deployment.sentry["openvim-controller"][0].info["public-address"]
+    return openvim.connect(address)
+
+def get_first_unit_status(service):
+    service_status = deployment.sentry.get_status()["openvim-controller"]
+    unit_status = next(iter(service_status.values()))
+    return unit_status
+
+def test_controller_blocks_without_mysql():
+    unit_status = get_first_unit_status("openvim-controller")
+    workload_status = unit_status["workload-status"]
+    assert workload_status["current"] == "blocked"
+    assert workload_status["message"] == "mysql database required"
+
+def test_adding_compute_unit():
+    deployment.add_unit("openvim-compute")
+    deployment.sentry.wait(timeout=900)
+    c = get_openvim_connection()
+    assert len(c.get_hosts()) == 2
+
+if __name__ == "__main__":
+    deploy_openvim_without_relations()
+    test_controller_blocks_without_mysql()
+    add_relations()
+    test_adding_compute_unit()

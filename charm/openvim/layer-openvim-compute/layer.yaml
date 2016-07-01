@@ -1,0 +1,12 @@
+includes:
+  - 'layer:basic'
+  - 'interface:openvim-compute'
+options:
+  basic:
+    packages:
+      - qemu-kvm
+      - libvirt-bin
+      - bridge-utils
+      - virt-viewer
+      - virt-manager
+      - hugepages

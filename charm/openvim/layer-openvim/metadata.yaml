@@ -1,0 +1,24 @@
+name: openvim
+summary: Open Virtual Infrastructure Manager
+maintainers:
+  - Rye Terrell <rye.terrell@canonical.com>
+  - George Kraft <george.kraft@canonical.com>
+description: |
+  Installs and configures the OpenVIM controller from OpenMANO.
+tags:
+  - nfv
+  - telco
+  - osm
+series:
+  - xenial
+extra-bindings:
+  public:
+  internal:
+requires:
+  db:
+    interface: mysql
+  compute:
+    interface: openvim-compute
+provides:
+  openvim-controller:
+    interface: openvim
