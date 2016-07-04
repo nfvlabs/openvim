@@ -547,7 +547,7 @@ def http_post_hosts():
         host['features'] = ",".join(features)
         host['numas'] = [] 
         
-        for node in rad_structure['resource topology']['nodes'].itervalues():
+        for node in (rad_structure['resource topology']['nodes'] or {}).itervalues():
             interfaces= []
             cores = []
             eligible_cores=[]
@@ -555,12 +555,10 @@ def http_post_hosts():
             for core in node['cpu']['eligible_cores']:
                 eligible_cores.extend(core)
             for core in node['cpu']['cores']:
-                c={'core_id': count, 'thread_id':core[0]}
-                if core[0] not in eligible_cores: c['status'] = 'noteligible'
-                cores.append(c)
-                c={'core_id': count, 'thread_id':core[1]}
-                if core[1] not in eligible_cores: c['status'] = 'noteligible'
-                cores.append(c)
+                for thread_id in core:
+                    c={'core_id': count, 'thread_id': thread_id}
+                    if thread_id not in eligible_cores: c['status'] = 'noteligible'
+                    cores.append(c)
                 count = count+1 
 
             if 'nics' in node:    

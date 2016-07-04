@@ -1,0 +1,44 @@
+#!/usr/bin/python3
+
+import amulet
+import openvim
+
+def deploy_openvim():
+    d = amulet.Deployment()
+    d.add("mysql", series="trusty")
+    d.add("openvim-controller", series="xenial")
+    d.add("openvim-compute", charm="local:xenial/openvim-compute", series="xenial")
+    d.relate("openvim-controller:db", "mysql:db")
+    d.relate("openvim-controller:compute", "openvim-compute:compute")
+    d.setup(timeout=900)
+    d.sentry.wait()
+    return d
+
+def get_openvim_connection(deployment):
+    address = deployment.sentry["openvim-controller"][0].info["public-address"]
+    return openvim.connect(address)
+
+def create_vm(deployment):
+    c = get_openvim_connection(deployment)
+    tenant = c.get_tenants()[0]
+    c.set_active_tenant(tenant)
+    networks = c.get_networks()
+    image = c.get_images()[0]
+    flavor = c.get_flavors()[0]
+
+    server = c.create_server(
+        name="vm",
+        description="test vm",
+        image=image,
+        flavor=flavor,
+        networks=networks
+    )
+
+    return server
+
+def test_vm_creation():
+    d = deploy_openvim()
+    create_vm(d)
+
+if __name__ == "__main__":
+    test_vm_creation()

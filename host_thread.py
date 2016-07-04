@@ -512,7 +512,7 @@ class host_thread(threading.Thread):
                     bus_ide_dev = True
                 text += self.tab() + "<disk type='file' device='"+dev['type']+"'>"
                 if 'file format' in dev:
-                    text += self.inc_tab() + "<driver name='qemu' type='"  +dev['file format']+ "' cache='none'/>"
+                    text += self.inc_tab() + "<driver name='qemu' type='"  +dev['file format']+ "' cache='writethrough'/>"
                 if 'source file' in dev:
                     text += self.tab() + "<source file='" +dev['source file']+ "'/>"
                 #elif v['type'] == 'block':

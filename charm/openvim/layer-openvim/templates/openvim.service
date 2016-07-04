@@ -1,0 +1,10 @@
+[Unit]
+Description=openvim
+
+[Service]
+User=openvim
+ExecStart=/opt/openmano/openvim/openvimd.py -c /opt/openmano/openvim/openvimd.cfg
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

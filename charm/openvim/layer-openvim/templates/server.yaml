@@ -1,0 +1,10 @@
+server:
+  name: VM
+  description: VM
+  imageRef: {{ image_uuid }}
+  flavorRef: {{ flavor_uuid }}
+  networks:
+  - name: default
+    uuid: {{ net_default_uuid }}
+  - name: virbr0
+    uuid: {{ net_virbr0_uuid }}

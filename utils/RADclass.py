@@ -130,7 +130,7 @@ class RADclass():
     #         (return_status, code) = get_nic_information_old(ssh_conn, nic_topology)
             (return_status, code) = get_nic_information(ssh_conn, virsh_conn, nic_topology)
             if not return_status:
-                return (return_status, 'Error at get_nic_informationin '+machine+': '+code)
+                return (return_status, 'Error at get_nic_information in '+machine+': '+code)
             warning_text += code
             
             #Pack each processor, memory node  and nics in a node element
@@ -307,15 +307,15 @@ class RADclass():
         return (True, "")
     
     def to_text(self):
-        text= 'name: '+self.name+'\n'
+        text= 'name: '+str(self.name)+'\n'
         text+= 'processor:\n'
         text+= '    nr_processors: '+str(self.nr_processors)+'\n' 
-        text+= '    family: '+self.processor_family+'\n'
-        text+= '    manufacturer: '+self.processor_manufacturer+'\n'
-        text+= '    version: '+self.processor_version+'\n'
+        text+= '    family: '+str(self.processor_family)+'\n'
+        text+= '    manufacturer: '+str(self.processor_manufacturer)+'\n'
+        text+= '    version: '+str(self.processor_version)+'\n'
         text+= '    features: '+str(self.processor_features)+'\n'
         text+= 'memory:\n'
-        text+= '    type: '+self.memory_type+'\n'
+        text+= '    type: '+str(self.memory_type)+'\n'
         text+= '    freq: '+str(self.memory_freq)+'\n'
         text+= '    nr_channels: '+str(self.memory_nr_channels)+'\n'
         text+= '    size: '+str(self.memory_size)+'\n'
@@ -497,18 +497,10 @@ class ProcessorNode():
                 warning_text += "processor feature '%s' not among: %s\n" % (feature, str(self.possible_versions))
             self.features.append(feature)
         
-        #If hyperthreading is active cores must be coupled in the form of [[a,b],[c,d],...]
-        if 'ht' in self.features:
-            for iterator in sorted(cores):
-                if not isinstance(iterator,list) or len(iterator) != 2 or not isinstance(iterator[0],int) or not isinstance(iterator[1],int):
-                    return (False, 'The cores list for an hyperthreaded processor must be coupled in the form of [[a,b],[c,d],...] where a,b,c,d are of type int')
-                self.cores.append(iterator)
-        #If hyperthreading is not active the cores are a single list in the form of [a,b,c,d,...]
-        else:
-            for iterator in sorted(cores):
-                if not isinstance(iterator,int):
-                    return (False, 'The cores list for a non hyperthreaded processor must be in the form of [a,b,c,d,...] where a,b,c,d are of type int')
-                self.cores.append(iterator)
+        for iterator in sorted(cores):
+            if not isinstance(iterator,list) or not all(isinstance(x, int) for x in iterator):
+                return (False, 'The cores list must be in the form of [[a,b],[c,d],...] where a,b,c,d are of type int')
+            self.cores.append(iterator)
         
         self.set_eligible_cores()
         
@@ -896,8 +888,10 @@ def get_memory_information(ssh_conn, virsh_conn, memory_nodes):
     warning_text=""
     tree=ElementTree.fromstring(virsh_conn.getSysinfo(0))
     memory_dict = dict()
+    node_id = 0 #TODO revise. Added for allowing VM as compute hosts 
     for target in tree.findall("memory_device"):
         locator_f = size_f = freq_f = type_f = formfactor_f = False
+        locator_f = True #TODO revise. Added for allowing VM as compute hosts
         module_form_factor = ""
         for entry in target.findall("entry"):
             if entry.get("name") == 'size':
@@ -929,28 +923,29 @@ def get_memory_information(ssh_conn, virsh_conn, memory_nodes):
             elif entry.get("name") == 'form_factor':
                 formfactor_f = True
                 module_form_factor = entry.text  
-                   
-            elif entry.get("name") == 'locator' and not locator_f:
-                # other case, it is obtained by bank_locator that we give priority to
-                locator = entry.text
-                pos = locator.find(module_form_factor)
-                if module_form_factor == locator[0:len(module_form_factor) ]:
-                    pos = len(module_form_factor) +1 
-                else:
-                    pos = 0
-                if locator[pos] in "ABCDEFGH":  
-                    locator_f = True
-                    node_id = ord(locator[pos])-ord('A')
-                    #print entry.text, node_id
+            #TODO revise. Commented for allowing VM as compute hosts
+            # elif entry.get("name") == 'locator' and not locator_f:
+            #     # other case, it is obtained by bank_locator that we give priority to
+            #     locator = entry.text
+            #     pos = locator.find(module_form_factor)
+            #     if module_form_factor == locator[0:len(module_form_factor) ]:
+            #         pos = len(module_form_factor) +1 
+            #     else:
+            #         pos = 0
+            #     if locator[pos] in "ABCDEFGH":  
+            #         locator_f = True
+            #         node_id = ord(locator[pos])-ord('A')
+            #         #print entry.text, node_id
+            # 
+            # elif entry.get("name") == 'bank_locator':
+            #     locator = entry.text
+            #     pos = locator.find("NODE ")
+            #     if pos >= 0 and len(locator)>pos+5:
+            #         if locator[pos+5] in ("01234567"): #len("NODE ") is 5
+            #             node_id = int(locator[pos+5])
+            #             locator_f = True
+            #  
 
-            elif entry.get("name") == 'bank_locator':
-                locator = entry.text
-                pos = locator.find("NODE ")
-                if pos >= 0 and len(locator)>pos+5:
-                    if locator[pos+5] in ("01234567"): #len("NODE ") is 5
-                        node_id = int(locator[pos+5])
-                        locator_f = True
-             
         #When all module fields have been found add a new module to the list 
         if locator_f and size_f and freq_f and type_f and formfactor_f:
             #If the memory node has not yet been created create it
@@ -959,12 +954,15 @@ def get_memory_information(ssh_conn, virsh_conn, memory_nodes):
                 
             #Add a new module to the memory node
             module = MemoryModule()
-            (return_status, code) = module.set(locator, module_type, module_freq, module_size, module_form_factor)
+            #TODO revise. Changed for allowing VM as compute hosts
+            (return_status, code) = module.set('NODE %d' % node_id, module_type, module_freq, module_size, module_form_factor)
+            #(return_status, code) = module.set(locator, module_type, module_freq, module_size, module_form_factor)
             if not return_status:
                 return (return_status, code)
             memory_dict[node_id].append(module)
             if code not in warning_text:
                 warning_text += code
+            node_id += 1 #TODO revise. Added for allowing VM as compute hosts
     
     #Fill memory nodes
     #Hugepage size is constant for all nodes
