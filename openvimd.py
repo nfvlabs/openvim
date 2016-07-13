@@ -321,8 +321,8 @@ if __name__=="__main__":
             http_thread_admin = None
         time.sleep(1)      
         logger.info('Waiting for http clients')
-        print 'openvimd ready'
-        print '===================='
+        print ('openvimd ready')
+        print ('====================')
         sys.stdout.flush()
         
         #TODO: Interactive console would be nice here instead of join or sleep

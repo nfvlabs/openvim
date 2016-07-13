@@ -99,32 +99,33 @@ done
         [[ -z $OPENDAYDLIGHT_PATH ]] && echo "OPENDAYDLIGHT_PATH shell variable must indicate opendaylight installation path" >&2 && exit -1
         #calculates log file name
         logfile=""
-        mkdir -p $DIR_OM/logs && logfile=$DIR_OM/logs/openflow || echo "can not create logs directory  $DIR_OM/logs"
+        mkdir -p $DIR_OM/logs && logfile=$DIR_OM/logs/openflow.log && logfile_console=$DIR_OM/logs/openflow_console.log || echo "can not create logs directory  $DIR_OM/logs"
         #check already running
         [ -n "$component_id" ] && echo "    $om_name is already running. Skipping" && continue
         #create screen if not created
         echo -n "    starting $om_name ... "
         if ! screen -wipe | grep -Fq .flow
         then
-            pushd ${OPENDAYDLIGHT_PATH} > /dev/null
+            pushd ${OPENDAYDLIGHT_PATH}/bin > /dev/null
             screen -dmS flow  bash
             sleep 1
             popd > /dev/null
         else
             echo -n " using existing screen 'flow' ... "
             screen -S flow -p 0 -X log off
-            screen -S flow -p 0 -X stuff "cd ${OPENDAYDLIGHT_PATH}\n"
+            screen -S flow -p 0 -X stuff "cd ${OPENDAYDLIGHT_PATH}/bin\n"
             sleep 1
         fi
         #move old log file index one number up and log again in index 0
         if [[ -n $logfile ]]
         then
-            for index in 8 7 6 5 4 3 2 1 0
+            for index in .9 .8 .7 .6 .5 .4 .3 .2 .1 ""
             do
-                [[ -f ${logfile}.${index} ]] && mv ${logfile}.${index} ${logfile}.$((index+1))
+                rm -f ${logfile}${index}
+                ln -s ${OPENDAYDLIGHT_PATH}/data/log/karaf.log${index} ${logfile}${index}
             done
-            [[ -f ${logfile}.log ]] && mv ${logfile}.log ${logfile}.0
-            screen -S flow -p 0 -X logfile ${logfile}.log
+            rm -rf ${logfile_console}
+            screen -S flow -p 0 -X logfile ${logfile_console}
             screen -S flow -p 0 -X log on
         fi
         #launch command to screen
@@ -138,24 +139,24 @@ done
            #echo timeout $timeout
            #if !  ps -f -U $USER -u $USER | grep -v grep | grep -q ${om_cmd}
            log_lines=0
-           [[ -n $logfile ]] && log_lines=`head ${logfile}.log | wc -l`
+           [[ -n $logfile_console ]] && log_lines=`head ${logfile_console} | wc -l`
            component_id=`ps -o pid,cmd -U $USER -u $USER | grep -v grep | grep ${om_cmd} | awk '{print $1}'`
            if [[ -z $component_id ]]
            then #process not started or finished
                [[ $log_lines -ge 2 ]] &&  echo -n "ERROR, it has exited." && break
                #started because writted serveral lines at log so report error
            fi
-           [[ -n $logfile ]] && grep -q "Listening on port" ${logfile}.log && sleep 1 && break
+           [[ -n $logfile_console ]] && grep -q "Listening on port" ${logfile_console} && sleep 1 && break
            sleep 1
            timeout=$((timeout -1))
         done
-        if [[ -n $logfile ]] && [[ $timeout == 0 ]] 
+        if [[ -n $logfile_console ]] && [[ $timeout == 0 ]] 
         then 
            echo -n "timeout!"
         else
            echo -n "running on 'screen -x flow'."
         fi
-        [[ -n $logfile ]] && echo "  Logging at '${logfile}.log'" || echo
+        [[ -n $logfile ]] && echo "  Logging at '${logfile}'" || echo
     fi
 
 

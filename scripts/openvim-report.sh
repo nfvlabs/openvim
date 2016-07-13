@@ -33,9 +33,8 @@ echo "-------------------------------"
 echo "log files"
 echo "-------------------------------"
 echo
-echo "cat $DIRNAME/../logs/openvim.?"
-cat $DIRNAME/../logs/openvim.log
-cat $DIRNAME/../logs/openvim.?
+echo "cat $DIRNAME/../logs/openvim.log*"
+cat $DIRNAME/../logs/openvim.log*
 echo
 echo
 

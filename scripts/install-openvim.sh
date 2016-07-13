@@ -221,12 +221,14 @@ su $SUDO_USER -c 'mkdir -p ~/bin'
 rm -f /home/${SUDO_USER}/bin/openvim
 rm -f /home/${SUDO_USER}/bin/openflow
 rm -f /home/${SUDO_USER}/bin/service-openvim
+rm -f /home/${SUDO_USER}/bin/initopenvim
 rm -f /home/${SUDO_USER}/bin/service-floodlight
 rm -f /home/${SUDO_USER}/bin/service-opendaylight
 rm -f /home/${SUDO_USER}/bin/get_dhcp_lease.sh
 ln -s ${PWD}/openvim/openvim   /home/${SUDO_USER}/bin/openvim
 ln -s ${PWD}/openvim/openflow  /home/${SUDO_USER}/bin/openflow
 ln -s ${PWD}/openvim/scripts/service-openvim.sh  /home/${SUDO_USER}/bin/service-openvim
+ln -s ${PWD}/openvim/scripts/initopenvim.sh  /home/${SUDO_USER}/bin/initopenvim
 ln -s ${PWD}/openvim/scripts/service-floodlight.sh  /home/${SUDO_USER}/bin/service-floodlight
 ln -s ${PWD}/openvim/scripts/service-opendaylight.sh  /home/${SUDO_USER}/bin/service-opendaylight
 ln -s ${PWD}/openvim/scripts/get_dhcp_lease.sh  /home/${SUDO_USER}/bin/get_dhcp_lease.sh
