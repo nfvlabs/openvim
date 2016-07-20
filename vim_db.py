@@ -296,11 +296,11 @@ class vim_db():
                     self.logger.debug(cmd)
                     self.cur.execute(cmd)
                     inserted = self.cur.rowcount
-                    #inserting new log
-                    del tenant_dict['uuid'] # not interested for the log
-                    cmd = "INSERT INTO logs (related,level,tenant_id,uuid,description) VALUES ('tenants','debug','%s','%s',\"new tenant %s\")" % (uuid, tenant_id, str(tenant_dict))
-                    self.logger.debug(cmd)
-                    self.cur.execute(cmd)  
+                    ##inserting new log
+                    #del tenant_dict['uuid'] # not interested for the log
+                    #cmd = "INSERT INTO logs (related,level,tenant_id,uuid,description) VALUES ('tenants','debug','%s','%s',\"new tenant %s\")" % (uuid, tenant_id, str(tenant_dict))
+                    #self.logger.debug(cmd)
+                    #self.cur.execute(cmd)  
                     #commit transaction
                     self.cur.close()
                 if inserted == 0: return 0, uuid
@@ -364,24 +364,24 @@ class vim_db():
                     self.cur.execute(cmd)
                     nb_rows = self.cur.rowcount
                     #inserting new log
-                    if nb_rows > 0 and log:                
-                        if add_uuid: del INSERT['uuid']
-                        #obtain tenant_id for logs
-                        if 'tenant_id' in INSERT: 
-                            tenant_id = INSERT['tenant_id']
-                            del INSERT['tenant_id']
-                        elif table == 'tenants':    
-                            tenant_id = uuid
-                        else:                       
-                            tenant_id = None
-                        if uuid is None: uuid_k = uuid_v = ""
-                        else: uuid_k=",uuid"; uuid_v=",'" + str(uuid) + "'"
-                        if tenant_id is None: tenant_k = tenant_v = ""
-                        else: tenant_k=",tenant_id"; tenant_v=",'" + str(tenant_id) + "'"
-                        cmd = "INSERT INTO logs (related,level%s%s,description) VALUES ('%s','debug'%s%s,\"new %s %s\")" \
-                            % (uuid_k, tenant_k, table, uuid_v, tenant_v, table[:-1], str(INSERT))
-                        self.logger.debug(cmd)
-                        self.cur.execute(cmd)                    
+                    #if nb_rows > 0 and log:                
+                    #    if add_uuid: del INSERT['uuid']
+                    #    #obtain tenant_id for logs
+                    #    if 'tenant_id' in INSERT: 
+                    #        tenant_id = INSERT['tenant_id']
+                    #        del INSERT['tenant_id']
+                    #    elif table == 'tenants':    
+                    #        tenant_id = uuid
+                    #    else:                       
+                    #        tenant_id = None
+                    #    if uuid is None: uuid_k = uuid_v = ""
+                    #    else: uuid_k=",uuid"; uuid_v=",'" + str(uuid) + "'"
+                    #    if tenant_id is None: tenant_k = tenant_v = ""
+                    #    else: tenant_k=",tenant_id"; tenant_v=",'" + str(tenant_id) + "'"
+                    #    cmd = "INSERT INTO logs (related,level%s%s,description) VALUES ('%s','debug'%s%s,\"new %s %s\")" \
+                    #        % (uuid_k, tenant_k, table, uuid_v, tenant_v, table[:-1], str(INSERT))
+                    #    self.logger.debug(cmd)
+                    #    self.cur.execute(cmd)                    
                     return nb_rows, uuid
 
             except (mdb.Error, AttributeError) as e:
@@ -429,14 +429,14 @@ class vim_db():
                     self.logger.debug(cmd)
                     self.cur.execute(cmd) 
                     nb_rows = self.cur.rowcount
-                    if nb_rows > 0 and log:                
-                        #inserting new log
-                        if uuid is None: uuid_k = uuid_v = ""
-                        else: uuid_k=",uuid"; uuid_v=",'" + str(uuid) + "'"
-                        cmd = "INSERT INTO logs (related,level%s,description) VALUES ('%s','debug'%s,\"updating %d entry %s\")" \
-                            % (uuid_k, table, uuid_v, nb_rows, (str(UPDATE)).replace('"','-')  )
-                        self.logger.debug(cmd)
-                        self.cur.execute(cmd)                    
+                    #if nb_rows > 0 and log:                
+                    #    #inserting new log
+                    #    if uuid is None: uuid_k = uuid_v = ""
+                    #    else: uuid_k=",uuid"; uuid_v=",'" + str(uuid) + "'"
+                    #    cmd = "INSERT INTO logs (related,level%s,description) VALUES ('%s','debug'%s,\"updating %d entry %s\")" \
+                    #        % (uuid_k, table, uuid_v, nb_rows, (str(UPDATE)).replace('"','-')  )
+                    #    self.logger.debug(cmd)
+                    #    self.cur.execute(cmd)                    
                     return nb_rows, uuid
             except (mdb.Error, AttributeError) as e:
                 r,c = self.format_error(e, "update_rows", cmd)
@@ -705,9 +705,9 @@ class vim_db():
                                 result = self.cur.execute(cmd)
 
                     #inserting new log
-                    cmd = "INSERT INTO logs (related,level,uuid,description) VALUES ('hosts','debug','%s','new host: %d numas, %d theads, %d ifaces')" % (uuid, nb_numas, nb_cores, nb_ifaces)
-                    self.logger.debug(cmd)
-                    result = self.cur.execute(cmd)                    
+                    #cmd = "INSERT INTO logs (related,level,uuid,description) VALUES ('hosts','debug','%s','new host: %d numas, %d theads, %d ifaces')" % (uuid, nb_numas, nb_cores, nb_ifaces)
+                    #self.logger.debug(cmd)
+                    #result = self.cur.execute(cmd)                    
 
                     #inseted ok
                 with self.con:
@@ -765,12 +765,12 @@ class vim_db():
                         self.cur.execute(cmd)
 
                     #inserting new log
-                    del flavor_dict['uuid']
-                    if 'extended' in flavor_dict: del flavor_dict['extended'] #remove two many information
-                    cmd = "INSERT INTO logs (related,level,uuid, tenant_id, description) VALUES ('flavors','debug','%s','%s',\"new flavor: %s\")" \
-                        % (uuid, tenant_id, str(flavor_dict))
-                    self.logger.debug(cmd)
-                    self.cur.execute(cmd)                    
+                    #del flavor_dict['uuid']
+                    #if 'extended' in flavor_dict: del flavor_dict['extended'] #remove two many information
+                    #cmd = "INSERT INTO logs (related,level,uuid, tenant_id, description) VALUES ('flavors','debug','%s','%s',\"new flavor: %s\")" \
+                    #    % (uuid, tenant_id, str(flavor_dict))
+                    #self.logger.debug(cmd)
+                    #self.cur.execute(cmd)                    
 
                     #inseted ok
                 return 1, uuid
@@ -821,10 +821,10 @@ class vim_db():
                         self.logger.debug(cmd)
                         self.cur.execute(cmd)
 
-                    #inserting new log
-                    cmd = "INSERT INTO logs (related,level,uuid, tenant_id, description) VALUES ('images','debug','%s','%s',\"new image: %s path: %s\")" % (uuid, tenant_id, image_dict['name'], image_dict['path'])
-                    self.logger.debug(cmd)
-                    self.cur.execute(cmd)                    
+                    ##inserting new log
+                    #cmd = "INSERT INTO logs (related,level,uuid, tenant_id, description) VALUES ('images','debug','%s','%s',\"new image: %s path: %s\")" % (uuid, tenant_id, image_dict['name'], image_dict['path'])
+                    #self.logger.debug(cmd)
+                    #self.cur.execute(cmd)                    
 
                     #inseted ok
                 return 1, uuid
@@ -868,22 +868,22 @@ class vim_db():
                             cmd = "DELETE FROM uuids WHERE uuid = '%s'" % item_id
                             self.logger.debug(cmd)
                             self.cur.execute(cmd)
-                            #inserting new log
-                            cmd = "INSERT INTO logs (related,level,uuid,tenant_id,description) \
-                                   VALUES ('%ss','debug','%s','%s','delete %s completely')" % \
-                                   (item_type, item_id, tenant_id, item_type)
-                            self.logger.debug(cmd)
-                            self.cur.execute(cmd)
+                            ##inserting new log
+                            #cmd = "INSERT INTO logs (related,level,uuid,tenant_id,description) \
+                            #       VALUES ('%ss','debug','%s','%s','delete %s completely')" % \
+                            #       (item_type, item_id, tenant_id, item_type)
+                            #self.logger.debug(cmd)
+                            #self.cur.execute(cmd)
                             return deleted, "%s '%s' completely deleted" % (item_type, item_id)
                         return 0, "%s '%s' not found" % (item_type, item_id)
                     
                     if deleted == 1:
-                        #inserting new log
-                        cmd = "INSERT INTO logs (related,level,uuid,tenant_id,description) \
-                                VALUES ('%ss','debug','%s','%s','delete %s reference for this tenant')" % \
-                                (item_type, item_id, tenant_id, item_type)
-                        self.logger.debug(cmd)
-                        self.cur.execute(cmd)
+                        ##inserting new log
+                        #cmd = "INSERT INTO logs (related,level,uuid,tenant_id,description) \
+                        #        VALUES ('%ss','debug','%s','%s','delete %s reference for this tenant')" % \
+                        #        (item_type, item_id, tenant_id, item_type)
+                        #self.logger.debug(cmd)
+                        #self.cur.execute(cmd)
 
                         #commit transaction
                         self.cur.close()
@@ -902,12 +902,12 @@ class vim_db():
                             cmd = "DELETE FROM uuids WHERE uuid = '%s'" % item_id
                             self.logger.debug(cmd)
                             self.cur.execute(cmd)
-                            #inserting new log
-                            cmd = "INSERT INTO logs (related,level,uuid,tenant_id,description) \
-                                   VALUES ('%ss','debug','%s','%s','delete %s completely')" % \
-                                   (item_type, item_id, tenant_id, item_type)
-                            self.logger.debug(cmd)
-                            self.cur.execute(cmd)
+                            ##inserting new log
+                            #cmd = "INSERT INTO logs (related,level,uuid,tenant_id,description) \
+                            #       VALUES ('%ss','debug','%s','%s','delete %s completely')" % \
+                            #       (item_type, item_id, tenant_id, item_type)
+                            #self.logger.debug(cmd)
+                            #self.cur.execute(cmd)
             except (mdb.Error, AttributeError) as e:
                 #print "delete_%s DB Exception %d: %s" % (item_type, e.args[0], e.args[1])
                 if deleted <0: 
@@ -940,10 +940,10 @@ class vim_db():
                         cmd = "DELETE FROM uuids WHERE uuid = '%s'" % uuid
                         self.logger.debug(cmd)
                         self.cur.execute(cmd)
-                        #inserting new log
-                        cmd = "INSERT INTO logs (related,level,uuid,tenant_id,description) VALUES ('%s','debug','%s','%s','delete %s')" % (table, uuid, tenant_str, table[:-1])
-                        self.logger.debug(cmd)
-                        self.cur.execute(cmd)                    
+                        ##inserting new log
+                        #cmd = "INSERT INTO logs (related,level,uuid,tenant_id,description) VALUES ('%s','debug','%s','%s','delete %s')" % (table, uuid, tenant_str, table[:-1])
+                        #self.logger.debug(cmd)
+                        #self.cur.execute(cmd)                    
                 return deleted, table[:-1] + " '%s' %s" %(uuid, "deleted" if deleted==1 else "not found")
             except (mdb.Error, AttributeError) as e:
                 r,c = self.format_error(e, "delete_row", cmd, "delete", 'instances' if table=='hosts' or table=='tenants' else 'dependencies')
@@ -1484,10 +1484,10 @@ class vim_db():
                                 (device['type'], uuid, image_id, vpci, xml, dev)
                             self.logger.debug(cmd)
                             self.cur.execute(cmd)
-                    #inserting new log
-                    cmd = "INSERT INTO logs (related,level,uuid,description) VALUES ('instances','debug','%s','new instance: %d numas, %d theads, %d ifaces %d bridge_ifaces')" % (uuid, nb_numas, nb_cores, nb_ifaces, nb_bridge_ifaces)
-                    self.logger.debug(cmd)
-                    self.cur.execute(cmd)                    
+                    ##inserting new log
+                    #cmd = "INSERT INTO logs (related,level,uuid,description) VALUES ('instances','debug','%s','new instance: %d numas, %d theads, %d ifaces %d bridge_ifaces')" % (uuid, nb_numas, nb_cores, nb_ifaces, nb_bridge_ifaces)
+                    #self.logger.debug(cmd)
+                    #self.cur.execute(cmd)                    
 
                     #inseted ok
                 return 1, uuid 
@@ -1551,10 +1551,10 @@ class vim_db():
                     self.logger.debug(cmd)
                     self.cur.execute(cmd)
 
-                    #insert log
-                    cmd = "INSERT INTO logs (related,level,uuid,description) VALUES ('instances','debug','%s','delete instance %s')" % (instance_id, logcause)
-                    self.logger.debug(cmd)
-                    self.cur.execute(cmd)                    
+                    ##insert log
+                    #cmd = "INSERT INTO logs (related,level,uuid,description) VALUES ('instances','debug','%s','delete instance %s')" % (instance_id, logcause)
+                    #self.logger.debug(cmd)
+                    #self.cur.execute(cmd)                    
 
                     #delete instance
                     cmd = "DELETE FROM instances WHERE uuid='%s' AND tenant_id='%s'" % (instance_id, tenant_id)
