@@ -76,7 +76,7 @@ class dhcp_thread(threading.Thread):
             self.ssh_conn.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.ssh_conn.load_system_host_keys()
             self.ssh_conn.connect(self.dhcp_params["host"], port=self.dhcp_params.get("port",22),
-                                  username=self.dhcp_params["user"], password=self.dhcp_params.get("password"), pkey=self.dhcp_params.get("key"),
+                                  username=self.dhcp_params["user"], password=self.dhcp_params.get("password"), key_filename=self.dhcp_params.get("key"),
                                   timeout=2)
         except paramiko.ssh_exception.SSHException as e:
             text = e.args[0]
