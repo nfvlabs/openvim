@@ -12,7 +12,7 @@ Openvim interfaces with the compute nodes in the NFV Infrastructure and an Openf
 
 #History
 
-Openvim was originally part of OpenMANO, an open source project providing a practical implementation of an ETSI MANO stack: a VIM (openvim), and NFVO+VNFM (openmano) and a GUI (openmano-gui). With the creation of ETSI Open Source MANO (OSM), the component implementing NFVO+VNFM has been contributed to OSM. Openvim will continue to exist as a separte project.
+Openvim was originally part of OpenMANO, an open source project providing a practical implementation of an ETSI MANO stack: a VIM (openvim), and NFVO+VNFM (openmano) and a GUI (openmano-gui). With the creation of ETSI Open Source MANO (OSM), the NFVO+VNFM (openmano) was contributed to OSM as seed code. From OSM Release 1, the VIM (openvim) has also been contributed to OSM. Openvim is maintained now by OSM, and this repository will be kept as fall-back. The up-to-date repo of openvim is located at [OSM openvim repo](https://osm.etsi.org/gitweb/?p=osm/openvim.git;a=summary)
 
 #Releases
 
