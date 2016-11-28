@@ -1,3 +1,11 @@
+_**This page is obsolete.**_
+
+_**The project OpenVIM, as well as OpenMANO, has been contributed to the open source community project Open Source MANO (OSM), hosted by ETSI.**_
+
+_**Go to the URL [osm.etsi.org](osm.etsi.org) to know more about OSM.**_
+
+***
+
 # openvim
 Openvim is a light implementation of an NFV VIM supporting EPA features and control of an underlay switching infrastructure through an OFC. Some of the EPA features included in openvim are:
 - CPU pinning
